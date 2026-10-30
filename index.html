@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Mensaje a mi PC</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; }
+        textarea { width: 100%; height: 100px; background: #2d2d2d; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px; margin-bottom: 15px; resize: none; font-size: 14px; box-sizing: border-box; }
+        button { background: #00ff88; color: #121212; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.2s; }
+        button:hover { background: #00cc6a; }
+        #estado { margin-top: 15px; font-size: 14px; color: #aaa; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Enviar a mi PC</h2>
+        <textarea id="mensajeInput" placeholder="Escribe tu mensaje aquí..."></textarea>
+        <button onclick="enviarMensaje()">Enviar a la PC</button>
+        <p id="estado"></p>
+    </div>
+
+    <script>
+        async function enviarMensaje() {
+            const texto = document.getElementById('mensajeInput').value;
+            const estado = document.getElementById('estado');
+
+            if (!texto.trim()) {
+                estado.style.color = '#ff5555';
+                estado.innerText = 'Escribe un mensaje primero.';
+                return;
+            }
+
+            estado.style.color = '#aaa';
+            estado.innerText = 'Enviando...';
+
+            try {
+                // Reemplaza 'http://localhost:8080' con tu IP pública o enlace de túnel cuando conectes tu PC desde afuera
+                const respuesta = await fetch('http://localhost:8080', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: texto, fecha: new Date().toLocaleString() })
+                });
+
+                if (respuesta.ok) {
+                    estado.style.color = '#00ff88';
+                    estado.innerText = '¡Mensaje recibido en la PC!';
+                    document.getElementById('mensajeInput').value = '';
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                estado.style.color = '#ff5555';
+                estado.innerText = 'Error: Asegúrate de que el servidor en C esté abierto.';
+            }
+        }
+    </script>
+</body>
+</html>
